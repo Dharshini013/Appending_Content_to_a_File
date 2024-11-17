@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible=IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Content in File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f4f8;
+        }
+        h2 {
+            color: #333;
+        }
+        .container {
+            margin-bottom: 15px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        input, button {
+            margin-right: 10px;
+            margin-top: 5px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Insert Content in the Middle of a File</h2>
+    <div class="container">
+        <input type="file" id="fileInput" accept=".txt" onchange="loadFile()" />
+        <br>
+        <textarea id="textArea" placeholder="File content will appear here..." readonly></textarea>
+        <br>
+        <input type="number" id="lineNumber" placeholder="Enter line number" min="1">
+        <input type="number" id="charPosition" placeholder="Character position" min="0">
+        <input type="text" id="textToInsert" placeholder="Text to insert">
+        <button onclick="insertText()">Insert Text</button>
+    </div>
+
+
+    <script>
+        function loadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const textArea = document.getElementById('textArea');
+           
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    textArea.value = e.target.result;
+                    textArea.readOnly = false; // Make it editable for insertions
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please select a file.');
+            }
+        }
+
+
+        function insertText() {
+            const textArea = document.getElementById('textArea');
+            const lineNumber = parseInt(document.getElementById('lineNumber').value, 10);
+            const charPosition = parseInt(document.getElementById('charPosition').value, 10);
+            const textToInsert = document.getElementById('textToInsert').value;
+
+
+            if (!lineNumber || lineNumber <= 0 || isNaN(lineNumber)) {
+                alert('Please enter a valid line number.');
+                return;
+            }
+
+
+            if (charPosition < 0 || isNaN(charPosition)) {
+                alert('Please enter a valid character position.');
+                return;
+            }
+
+
+            const lines = textArea.value.split("\n");
+
+
+            if (lineNumber > lines.length) {
+                alert('Line number out of range.');
+                return;
+            }
+
+
+            const line = lines[lineNumber - 1];
+
+
+            if (charPosition > line.length) {
+                alert('Character position is out of range for the selected line.');
+                return;
+            }
+
+
+            // Insert the new text at the specified character position in the line
+            lines[lineNumber - 1] = line.slice(0, charPosition) + textToInsert + line.slice(charPosition);
+
+
+            // Join the lines back and set it to the textarea
+            textArea.value = lines.join("\n");
+        }
+    </script>
+</body>
+</html>
+
+
